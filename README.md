@@ -1,4 +1,4 @@
-# Template-Zabbix-Expiração-de-Dominio
+# Template-Zabbix-Expiracao-de-Dominio
 Template para Monitoramento de Validade de Domínio
 
 
