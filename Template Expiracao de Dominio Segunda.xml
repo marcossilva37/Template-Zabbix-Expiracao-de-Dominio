@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2025-02-26T19:39:13Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template Expiracao de Dominio Segunda</template>
+            <name>Template Expiracao de Dominio Segunda</name>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Checa Dominio</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>{HOST.NAME} Dias restantes</name>
+                    <type>CALCULATED</type>
+                    <key>calcula.data</key>
+                    <delay>12h</delay>
+                    <units>day(s)</units>
+                    <params>last(&quot;data_expire.sh[{HOST.NAME}]&quot;)</params>
+                    <applications>
+                        <application>
+                            <name>Checa Dominio</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>TRIM</type>
+                            <params>.00000</params>
+                        </step>
+                        <step>
+                            <type>JAVASCRIPT</type>
+                            <params>// Supondo que a data de expiração seja recebida como uma string no formato AAAAMMDD
+var expirationDate = value; // 'value' é a variável que contém a data de expiração
+
+// Converter a data de expiração para um objeto Date
+var year = parseInt(expirationDate.substring(0, 4));
+var month = parseInt(expirationDate.substring(4, 6)) - 1; // Mês começa do zero em JavaScript
+var day = parseInt(expirationDate.substring(6, 8));
+var expireDate = new Date(year, month, day);
+
+// Obter a data atual
+var currentDate = new Date();
+
+// Calcular a diferença em milissegundos
+var diffInMs = expireDate - currentDate;
+
+// Converter a diferença para dias
+var diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+return diffInDays;
+</params>
+                        </step>
+                    </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&lt;=0</expression>
+                            <name>Dominio {HOST.NAME} Expirado</name>
+                            <priority>DISASTER</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&lt;5</expression>
+                            <name>Dominio {HOST.NAME} Irá expirar em 5 dias</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&lt;15</expression>
+                            <name>Dominio {HOST.NAME} Irá expirar em 15 dias</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&lt;30</expression>
+                            <name>Dominio {HOST.NAME} Irá expirar em 30 dias</name>
+                            <priority>AVERAGE</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>{HOST.NAME} Data de Validade do Dominio</name>
+                    <type>EXTERNAL</type>
+                    <key>data_expire.sh[{HOST.NAME}]</key>
+                    <delay>1d;wd1h7</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>Checa Dominio</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+        </template>
+    </templates>
+</zabbix_export>
