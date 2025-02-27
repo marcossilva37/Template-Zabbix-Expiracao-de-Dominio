@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2025-02-26T19:39:13Z</date>
+    <date>2025-02-27T18:07:01Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -26,7 +26,7 @@
                     <name>{HOST.NAME} Dias restantes</name>
                     <type>CALCULATED</type>
                     <key>calcula.data</key>
-                    <delay>12h</delay>
+                    <delay>1d</delay>
                     <units>day(s)</units>
                     <params>last(&quot;data_expire.sh[{HOST.NAME}]&quot;)</params>
                     <applications>
@@ -71,18 +71,18 @@ return diffInDays;
                         </trigger>
                         <trigger>
                             <expression>{last()}&lt;5</expression>
-                            <name>Dominio {HOST.NAME} Irá expirar em 5 dias</name>
+                            <name>Dominio {HOST.NAME} Irá expirar em {ITEM.LASTVALUE}</name>
                             <priority>HIGH</priority>
                         </trigger>
                         <trigger>
                             <expression>{last()}&lt;15</expression>
-                            <name>Dominio {HOST.NAME} Irá expirar em 15 dias</name>
+                            <name>Dominio {HOST.NAME} Irá expirar em {ITEM.LASTVALUE}</name>
                             <priority>HIGH</priority>
                         </trigger>
                         <trigger>
                             <expression>{last()}&lt;30</expression>
-                            <name>Dominio {HOST.NAME} Irá expirar em 30 dias</name>
-                            <priority>AVERAGE</priority>
+                            <name>Dominio {HOST.NAME} Irá expirar em {ITEM.LASTVALUE}</name>
+                            <priority>HIGH</priority>
                         </trigger>
                     </triggers>
                 </item>
